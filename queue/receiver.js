@@ -1,5 +1,7 @@
 let amqp = require("amqplib/callback_api");
 const {isValid} = require("../validation")
+const {checkDomainExpiration} = require("../domainExpirationCheck")
+const {Domain} = require("../db/connection")
 
 let receiveFromQueue = function() {
     amqp.connect("amqp://localhost", function(error0, connection) {
@@ -16,14 +18,22 @@ let receiveFromQueue = function() {
             durable: false
             });
 
-            channel.consume(QUEUE, function(msg) {
-                if(isValid(msg.content.toString())) {
-                    console.log("Valid: ", msg.content.toString())
+            channel.consume(QUEUE, async function(msg) {
+                let message = msg.content.toString()
+                if(isValid(message)) {
+                    let expirationDate = await checkDomainExpiration(message)
+                    if(expirationDate) {
+                        try {
+                            let domain = await Domain.create({ domain: message, expiration_date: expirationDate, is_valid: true })
+                        } catch(e) {
+                            console.log("Error: ", e)
+                        }
+                    }
                 } else {
-                    console.log("Invalid: ", msg.content.toString())
+                    console.log("Invalid: ", message)
                 }
             
-                console.log(" [x] Received %s", msg.content.toString());
+                console.log(" [x] Received %s", message);
             }, {
                 noAck: true
             });

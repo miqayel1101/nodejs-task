@@ -1,4 +1,3 @@
-
 let amqp = require('amqplib/callback_api');
 
 let sendToQueue = function(csvArray) {
