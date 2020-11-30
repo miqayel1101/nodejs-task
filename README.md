@@ -10,7 +10,7 @@ to get the app work you should follow these steps:
 ```bash
 git clone https://github.com/miqayel1101/nodejs-task.git
 ```
-open terminal from root folder and run server: ```node server.js```
+open terminal from root folder and install npm packages: ```npm i ```, after it run server: ```node server.js```
 
 then open your browser move to ```localhost:3000``` and upload a csv file with domains
 
