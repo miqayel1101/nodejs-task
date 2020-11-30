@@ -23,4 +23,4 @@ let checkDomain = function(req, res) {
     }
 }
 
-module.exports = {checkDomain}
+module.exports = {isValid}
