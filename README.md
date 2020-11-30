@@ -23,6 +23,8 @@ the csv file must have this format:
    | -vk.com(invalid) |
    | google.co|
    | .     .   .|
+   
+   
 then the app will store the data in MySQL database.
 
 ```To connect to database you have to set your own env variables. DB_USERNAME DB_PASSWORD DB_DATABASE DB_HOST```
