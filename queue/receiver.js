@@ -1,44 +1,48 @@
-let amqp = require("amqplib/callback_api");
+let amqp = require("amqplib")
 const {isValid} = require("../validation")
 const {checkDomainExpiration} = require("../domainExpirationCheck")
 const {Domain} = require("../db/connection")
 
-let receiveFromQueue = function() {
-    amqp.connect("amqp://localhost", function(error0, connection) {
-        if (error0) {
-            throw error0;
-        }
-        connection.createChannel(function(error1, channel) {
-            if (error1) {
-            throw error1;
+let checkAndStore = async function(message) {
+    if(isValid(message)) {
+        let expirationDate = await checkDomainExpiration(message)
+        if(expirationDate) {
+            try {
+                await Domain.create({ domain: message, expiration_date: expirationDate, is_valid: true })
+            } catch(e) {
+                console.log("Error: ", e)
             }
-            let QUEUE = "taskQueue"
+        }
+    } else {
+        console.log("Invalid: ", message)
+    }
+}
 
-            channel.assertQueue(QUEUE, {
-            durable: false
-            });
-
-            channel.consume(QUEUE, async function(msg) {
+let receiveFromQueue = async function() {
+    try {
+        const connection = await amqp.connect("amqp://localhost")
+        const channel = await connection.createChannel()
+        
+        const  QUEUE = "taskQueue"
+    
+        channel.assertQueue(QUEUE, {
+             durable: false
+        })
+    
+        channel.consume(QUEUE, async function(msg) {
+            try {
                 let message = msg.content.toString()
-                if(isValid(message)) {
-                    let expirationDate = await checkDomainExpiration(message)
-                    if(expirationDate) {
-                        try {
-                            let domain = await Domain.create({ domain: message, expiration_date: expirationDate, is_valid: true })
-                        } catch(e) {
-                            console.log("Error: ", e)
-                        }
-                    }
-                } else {
-                    console.log("Invalid: ", message)
-                }
-            
-                console.log(" [x] Received %s", message);
-            }, {
-                noAck: true
-            });
-        });
-    });
+                await checkAndStore(message)
+                console.log(" [x] Received %s", message)
+            } catch (e) {
+                throw e
+            }
+        },{
+            noAck: true
+        })
+    } catch(e) {
+        throw e
+    }
 } 
 
 module.exports = {receiveFromQueue}

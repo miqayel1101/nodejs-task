@@ -9,18 +9,4 @@ let isValid = function(domain) {
     }
 }
 
-let checkDomain = function(req, res) {
-    let domain = req.params.domain
-
-    if(isValid(domain)) {
-        res.send({
-            "status": "valid"
-        })
-    } else {
-        res.send({
-            "status": "invalid"
-        })
-    }
-}
-
 module.exports = {isValid}

@@ -1,7 +1,7 @@
 let sendFile = function() {
 
     let input = document.getElementById("file")
-    let fd = new FormData();
+    let fd = new FormData()
     if(input.files.length > 0) {
         fd.append("file",input.files[0])
     }
@@ -18,5 +18,5 @@ let sendFile = function() {
         error: function (responseData, textStatus, errorThrown) {
             alert("POST failed.")
         }
-    });
+    })
 }

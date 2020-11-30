@@ -1,4 +1,4 @@
-const whoiser = require('whoiser');
+const whoiser = require('whoiser')
 
 let checkDomainExpiration = async function(domain) {
     let domainInfo = await whoiser(domain)
