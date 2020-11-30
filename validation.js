@@ -1,5 +1,8 @@
 let isValid = function(domain) {
-    if(/^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})*(?:\.[a-zA-Z]{2,6})$/.test(domain)) {
+
+    let domainPattern = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})*(?:\.[a-zA-Z]{2,6})$/
+
+    if(domainPattern.test(domain)) {
         return true
     } else {
         return false
